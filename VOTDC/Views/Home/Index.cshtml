@@ -1,0 +1,48 @@
+﻿@model VOTDC.ViewModels.Search
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<div class="text-center">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(m => m.StartDate)
+            <input asp-for="StartDate" class="form-control datepicker" type="date" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PageSize" class="form-control"></label>
+            <input asp-for="PageSize" class="form-control" value="10" />
+            <span asp-validation-for="PageSize" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button id="submit" class="btn btn-primary" type="button">Search</button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#submit').click(
+
+                function () {
+
+                    $.ajax({
+                        method: "GET",
+                        url: "/Home/Search?StartDate=" + $("#StartDate").val() + "&PageSize=" + $("#PageSize").val(),
+                        contentType: "application/json",
+                        success: function (data) { console.log(data); }
+                    })
+
+                });
+        });
+    </script>
+}
+
+
