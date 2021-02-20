@@ -31,17 +31,12 @@ namespace VOTDC.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("VerseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.HasIndex("VerseId");
 
@@ -52,10 +47,9 @@ namespace VOTDC.Migrations
 
             modelBuilder.Entity("VOTDC.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
@@ -74,7 +68,7 @@ namespace VOTDC.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("38f214b1-1a95-49b3-847b-9a655a3117fe"),
                             IsAdmin = true,
                             Username = "admin"
                         });
@@ -134,7 +128,9 @@ namespace VOTDC.Migrations
                 {
                     b.HasOne("VOTDC.Models.User", "User")
                         .WithMany("Favorites")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VOTDC.Models.Verse", "Verse")
                         .WithMany()

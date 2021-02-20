@@ -10,7 +10,12 @@ namespace VOTDC
 {
     public class ApiClient
     {
-        public List<Verse> GetResponse(SearchViewModel search)
+        public List<VerseViewModel> GetResponse(SearchViewModel search)
+        {
+            return GetResponse(search, null);
+        }
+
+        public List<VerseViewModel> GetResponse(SearchViewModel search, User user)
         {
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "d10161af8cf44f0c8267d571c682fda4");
@@ -35,15 +40,50 @@ namespace VOTDC
             }
             dataContext.SaveChanges();
 
-            return verses;
+            if (user == null)
+            {
+                return verses.Select(v => new VerseViewModel
+                {
+                    Id = v.Id,
+                    IsFavorite = false,
+                    ImageLink = v.ImageLink,
+                    ReferenceText = v.ReferenceText,
+                    VerseText = v.VerseText,
+                    VerseDate = v.VerseDate
+                })
+                    .OrderByDescending(v => v.VerseDate)
+                    .ToList();
+            }
+
+            var userFavoriteIds = dataContext.Favorites
+                .Where(f => f.UserId == user.Id && verseIds.Contains(f.VerseId))
+                .Select(f => f.VerseId)
+                .ToList();
+
+            var verseViewModels = dataContext.Verses
+                .Where(v => verseIds.Contains(v.Id))
+                .Select(v => new VerseViewModel
+                {
+                    Id = v.Id,
+                    ImageLink = v.ImageLink,
+                    VerseText = v.VerseText,
+                    ReferenceText = v.ReferenceText,
+                    VerseDate = v.VerseDate
+                })
+                .OrderByDescending(v => v.VerseDate)
+                .ToList();
+
+            verseViewModels.ForEach(v => v.IsFavorite = userFavoriteIds.Contains(v.Id));
+
+            return verseViewModels;
         }
 
-        
+
         private bool ValidateVerse(Verse verse)
         {
             //This always is true.
             //If this was the real world just shoving something in the db from the internet is proably a bad idead
-            return true ;
+            return true;
         }
     }
 }

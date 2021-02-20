@@ -4,6 +4,11 @@
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+    .favorite {
+        color:red!important;
+    }
+</style>
 
 <div class="jumbotron">
     <div class="container">
@@ -11,9 +16,12 @@
         <div class="text-center">
             <div class="row">
 
-                <div class="col-lg-4 col-md-2">
+                <div class="col-md-6" style="margin-top:30px">
+
+                    <h2>Verse Of The Day</h2>
+                    <p>Did you miss the verse of the day?<br /> Search for it here or checkout your <a href="/Favorites">check out your favorites.</a></p>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 mx-auto">
                     <div class="card">
                         <div class="card-body">
                             @using (Html.BeginForm())
@@ -40,7 +48,7 @@
         </div>
     </div>
 </div>
-<div id="verse-grid">
+<div id="verse-grid" style="display:none">
     <div class="container">
         <div class="row">
             <div v-for="verse in verses" class="col-sm-12 col-md-6 col-lg-4">
@@ -49,9 +57,37 @@
                     <div class="card-body">
                         <h5 class="card-title">{{verse.referenceText}}</h5>
                         <p class="card-text">{{verse.verseText}}</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <span v-on:click="favorite(verse)" class="btn btn-primary"><i class="fa fa-heart" v-bind:class="{ favorite: verse.isFavorite }"></i> Favorite</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal-->
+
+<div id="modal-login" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center">Login To Favorite</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p>You need to login to favorite a verse. You can use any username (we're on the honor system.)</p>
+                <form>
+                    <input type="hidden" id="staged-verse" />
+                    <div class="form-group">
+                        <input id="username" class="form-control" placeholder="Username" />
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-success" id="button-login">Submit</button>
+
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -63,18 +99,34 @@
 
 
     <script>
+        var toggleFavorite = function (verse) {
+            console.log(verse.isFavorite);
+            $.ajax({
+                method: "POST",
+                url: "/Home/Favorite",
+                data: { "verseId": verse.id },
+                success: function (data) {
+                    if (!data.isLoggedIn) {
+                        $('#modal-login').modal();
+                        $('#staged-verse').val(verse.id);
+                    } else {
+                        verse.isFavorite = data.isFavorited;
+                    }
+                }
+            });
+        }
+
         var verseVue = new Vue({
             el: '#verse-grid',
             data: {
-                verses: [
-                    { id: "One" }
-                ]
+                verses: []
             },
             methods: {
                 update: function (verseData) {
-
                     this.verses = verseData;
-
+                },
+                favorite: function (verse) {
+                    toggleFavorite(verse);
                 }
             }
         })
@@ -83,17 +135,39 @@
             $('#submit').click(
                 function () {
                     if ($('form').valid()) {
+                        $('#verse-grid').hide();
+                        $('#submit').html('<i class="fas fa-spinner fa-pulse"></i> Searching')
                         $.ajax({
                             method: "GET",
                             url: "/Home/Search?StartDate=" + $("#StartDate").val() + "&PageSize=" + $("#PageSize").val(),
                             contentType: "application/json",
                             success: function (data) {
                                 verseVue.update(data);
+                                $("#verse-grid").show();
+                                $('#submit').html('Search')
                             }
                         })
                     }
                 });
 
+            $('#button-login').click(
+                function () {
+                    $.ajax({
+                        method: "POST",
+                        url: "/Home/Login",
+                        data: {
+                            "Username": $('#username').val(),
+                            "VerseId": $('#staged-verse').val(),
+                            "StartDate": $("#StartDate").val(),
+                            "PageSize": $("#PageSize").val()
+                        },
+                        success: function (data) {
+                            verseVue.update(data); 
+                            $('#modal-login').modal('hide');
+                        }
+                    });
+                }
+            )
 
         });
     </script>

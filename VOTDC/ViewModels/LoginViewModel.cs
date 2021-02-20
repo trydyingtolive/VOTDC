@@ -6,22 +6,12 @@ using System.Threading.Tasks;
 
 namespace VOTDC.ViewModels
 {
-    public class SearchViewModel
+    public class LoginViewModel
     {
-        public SearchViewModel()
-        {
-        }
-        public SearchViewModel(DateTime startDate, int pageSize)
-        {
-            StartDate = startDate;
-            PageSize = pageSize;
-        }
-
         [Required]
+        public string Username { get; set; }
+        public Guid VerseId { get; set; }
         public DateTime StartDate { get; set; }
-
-        [Required]
-        [Range(1, 100)]
         public int PageSize { get; set; }
     }
 }

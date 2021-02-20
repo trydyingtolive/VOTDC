@@ -11,8 +11,7 @@ namespace VOTDC.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -51,7 +50,6 @@ namespace VOTDC.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId1 = table.Column<int>(type: "int", nullable: true),
                     VerseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -59,11 +57,11 @@ namespace VOTDC.Migrations
                 {
                     table.PrimaryKey("PK_Favorites", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Favorites_Users_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Favorites_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Favorites_Verses_VerseId",
                         column: x => x.VerseId,
@@ -75,7 +73,7 @@ namespace VOTDC.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "IsAdmin", "Username" },
-                values: new object[] { 1, true, "admin" });
+                values: new object[] { new Guid("38f214b1-1a95-49b3-847b-9a655a3117fe"), true, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_UserId",
@@ -86,11 +84,6 @@ namespace VOTDC.Migrations
                 name: "IX_Favorites_UserId_VerseId",
                 table: "Favorites",
                 columns: new[] { "UserId", "VerseId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Favorites_UserId1",
-                table: "Favorites",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_VerseId",

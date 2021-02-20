@@ -1,0 +1,24 @@
+﻿@model IEnumerable<VOTDC.ViewModels.VerseViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div id="verse-grid">
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="card rounded" style="margin:5px;">
+                        <img class="card-img-top" src="@Html.DisplayFor(modelItem => item.ImageLink)" alt="@Html.DisplayFor(modelItem => item.ReferenceText)">
+                        <div class="card-body">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => item.ReferenceText)</h5>
+                            <p class="card-text"> @Html.DisplayFor(modelItem => item.VerseText)</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

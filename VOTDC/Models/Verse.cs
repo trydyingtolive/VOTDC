@@ -24,5 +24,6 @@ namespace VOTDC.Models
         public string TwitterShareUrl { get; set; }
         public string PinterestShareUrl { get; set; }
         public string Url { get; set; }
+
     }
 }

@@ -23,7 +23,7 @@ namespace VOTDC.Data
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Username = "admin",
                     IsAdmin = true
                 }); ;
