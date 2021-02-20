@@ -114,16 +114,23 @@ namespace VOTDC.Controllers
                 throw new Exception("Failed Login");
             }
 
-            login.Username = login.Username.ToLower();
+            await AddOrUpdateUser(login.Username);
+
+            return Redirect("/Favorites");
+        }
+
+        private async Task<User> AddOrUpdateUser(string username)
+        {
+            username = username.ToLower();
 
             //Get or create the user from the db
-            var user = dataContext.Users.Where(u => u.Username == login.Username).FirstOrDefault();
+            var user = dataContext.Users.Where(u => u.Username == username).FirstOrDefault();
             if (user == null)
             {
                 user = new User
                 {
                     Id = Guid.NewGuid(),
-                    Username = login.Username
+                    Username = username
                 };
 
                 dataContext.Users.Add(user);
@@ -134,6 +141,18 @@ namespace VOTDC.Controllers
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
             await HttpContext.SignInAsync(new ClaimsPrincipal(new ClaimsIdentity(claims, "Cookies", "user", "role")));
 
+            return user;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginFavorite(LoginFavoriteViewModel login)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Failed Login");
+            }
+
+            var user = await AddOrUpdateUser(login.Username);
 
             //add the favorite
             var favorite = dataContext.Favorites

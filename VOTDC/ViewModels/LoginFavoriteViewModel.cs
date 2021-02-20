@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace VOTDC.ViewModels
 {
-    public class LoginViewModel
+    public class LoginFavoriteViewModel
     {
         [Required]
         public string Username { get; set; }
+        public Guid VerseId { get; set; }
+        public DateTime StartDate { get; set; }
+        public int PageSize { get; set; }
     }
 }

@@ -8,6 +8,11 @@
     .favorite {
         color:red!important;
     }
+
+    .jumbotron {
+        background-image: url("/img/background.jpg");
+        background-size: cover;
+    }
 </style>
 
 <div class="jumbotron">
@@ -16,10 +21,9 @@
         <div class="text-center">
             <div class="row">
 
-                <div class="col-md-6" style="margin-top:30px">
-
+                <div class="col-md-6" style="margin:50px 0px;font-size:1.2em">
                     <h2>Verse Of The Day</h2>
-                    <p>Did you miss the verse of the day?<br /> Search for it here or checkout your <a href="/Favorites">check out your favorites.</a></p>
+                    <p>Did you miss the verse of the day?<br /> Search for it here or <a href="/Favorites">check out your favorites.</a></p>
                 </div>
                 <div class="col-lg-4 col-md-6 mx-auto">
                     <div class="card">
@@ -57,7 +61,9 @@
                     <div class="card-body">
                         <h5 class="card-title">{{verse.referenceText}}</h5>
                         <p class="card-text">{{verse.verseText}}</p>
+                        <div class="text-center">
                         <span v-on:click="favorite(verse)" class="btn btn-primary"><i class="fa fa-heart" v-bind:class="{ favorite: verse.isFavorite }"></i> Favorite</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -154,7 +160,7 @@
                 function () {
                     $.ajax({
                         method: "POST",
-                        url: "/Home/Login",
+                        url: "/Home/LoginFavorite",
                         data: {
                             "Username": $('#username').val(),
                             "VerseId": $('#staged-verse').val(),

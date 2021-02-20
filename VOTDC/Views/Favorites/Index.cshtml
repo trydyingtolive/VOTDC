@@ -7,6 +7,28 @@
 <div id="verse-grid">
     <div class="container">
         <div class="row">
+            @if (!Model.Any())
+            {
+                <div class="col-md-3">
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+
+                            <h1>It's a Bit Empty Here</h1>
+                            <p>
+                                It seems you haven't favorited any verses yet.
+                                <br />
+                                Vist the <a href="/">search page</a> to find your favorities.
+                            </p>
+
+
+                        </div>
+                    </div>
+                </div>
+            }
+
             @foreach (var item in Model)
             {
                 <div class="col-sm-12 col-md-6 col-lg-4">
