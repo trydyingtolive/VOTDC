@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VOTDC.ViewModels
 {
-    public class Search
+    public class SearchViewModel
     {
         [Required]
         public DateTime StartDate { get; set; }

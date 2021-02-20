@@ -13,8 +13,7 @@ namespace VOTDC.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Username = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -26,12 +25,20 @@ namespace VOTDC.Migrations
                 name: "Verses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ResourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VerseText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VerseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReferenceLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Book = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Chapter = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Verses = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    VerseNumbers = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReferenceText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BibleReferenceLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FacebookShareUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TwitterShareUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PinterestShareUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -42,21 +49,21 @@ namespace VOTDC.Migrations
                 name: "Favorites",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    VerseId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId1 = table.Column<int>(type: "int", nullable: true),
+                    VerseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Favorites", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Favorites_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Favorites_Users_UserId1",
+                        column: x => x.UserId1,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Favorites_Verses_VerseId",
                         column: x => x.VerseId,
@@ -67,8 +74,8 @@ namespace VOTDC.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Email", "IsAdmin", "Password" },
-                values: new object[] { 1, "admin@example.com", true, "" });
+                columns: new[] { "Id", "IsAdmin", "Username" },
+                values: new object[] { 1, true, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_UserId",
@@ -81,21 +88,21 @@ namespace VOTDC.Migrations
                 columns: new[] { "UserId", "VerseId" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Favorites_UserId1",
+                table: "Favorites",
+                column: "UserId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Favorites_VerseId",
                 table: "Favorites",
                 column: "VerseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
+                name: "IX_Users_Username",
                 table: "Users",
-                column: "Email",
+                column: "Username",
                 unique: true,
-                filter: "[Email] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Verses_ResourseId",
-                table: "Verses",
-                column: "ResourseId");
+                filter: "[Username] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

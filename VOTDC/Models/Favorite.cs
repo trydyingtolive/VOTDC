@@ -13,12 +13,12 @@ namespace VOTDC.Models
     public class Favorite
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public virtual User User { get; set; }
 
-        public int VerseId { get; set; }
+        public Guid VerseId { get; set; }
         public Verse Verse { get; set; }
 
         public DateTime CreatedDateTime { get; set; }

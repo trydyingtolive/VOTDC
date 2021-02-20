@@ -27,13 +27,12 @@ namespace VOTDC.Controllers
         }
 
         [HttpGet]
-        public string Search(ViewModels.Search search)
+        public IActionResult Search(ViewModels.SearchViewModel search)
         {
             if (ModelState.IsValid)
             {
-                Response.ContentType = "application/json";
                 var client = new ApiClient();
-                return client.GetResponse(search);
+                return Json(client.GetResponse(search));
             }
             throw new Exception("Not valid");
         }

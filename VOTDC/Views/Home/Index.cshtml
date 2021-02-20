@@ -1,46 +1,100 @@
-﻿@model VOTDC.ViewModels.Search
+﻿@model VOTDC.ViewModels.SearchViewModel
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
 
+<div class="jumbotron">
+    <div class="container">
 
-<div class="text-center">
-    @using (Html.BeginForm())
-    {
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(m => m.StartDate)
-            <input asp-for="StartDate" class="form-control datepicker" type="date" />
-            <span asp-validation-for="StartDate" class="text-danger"></span>
+        <div class="text-center">
+            <div class="row">
+
+                <div class="col-lg-4 col-md-2">
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            @using (Html.BeginForm())
+                            {
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.StartDate)
+                                    <input asp-for="StartDate" class="form-control datepicker" type="date" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.PageSize)
+                                    <input asp-for="PageSize" class="form-control" value="10" />
+                                    <span asp-validation-for="PageSize" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <button id="submit" class="btn btn-primary" type="button">Search</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label asp-for="PageSize" class="form-control"></label>
-            <input asp-for="PageSize" class="form-control" value="10" />
-            <span asp-validation-for="PageSize" class="text-danger"></span>
+    </div>
+</div>
+<div id="verse-grid">
+    <div class="container">
+        <div class="row">
+            <div v-for="verse in verses" class="col-sm-12 col-md-6 col-lg-4">
+                <div class="card rounded" style="margin:5px;">
+                    <img class="card-img-top" :src="verse.imageLink" :alt="verse.referenceText">
+                    <div class="card-body">
+                        <h5 class="card-title">{{verse.referenceText}}</h5>
+                        <p class="card-text">{{verse.verseText}}</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <button id="submit" class="btn btn-primary" type="button">Search</button>
-        </div>
-    }
+    </div>
 </div>
 
 @section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+
     <script>
+        var verseVue = new Vue({
+            el: '#verse-grid',
+            data: {
+                verses: [
+                    { id: "One" }
+                ]
+            },
+            methods: {
+                update: function (verseData) {
+
+                    this.verses = verseData;
+
+                }
+            }
+        })
+
         $(document).ready(function () {
             $('#submit').click(
-
                 function () {
-
-                    $.ajax({
-                        method: "GET",
-                        url: "/Home/Search?StartDate=" + $("#StartDate").val() + "&PageSize=" + $("#PageSize").val(),
-                        contentType: "application/json",
-                        success: function (data) { console.log(data); }
-                    })
-
+                    if ($('form').valid()) {
+                        $.ajax({
+                            method: "GET",
+                            url: "/Home/Search?StartDate=" + $("#StartDate").val() + "&PageSize=" + $("#PageSize").val(),
+                            contentType: "application/json",
+                            success: function (data) {
+                                verseVue.update(data);
+                            }
+                        })
+                    }
                 });
+
+
         });
     </script>
 }

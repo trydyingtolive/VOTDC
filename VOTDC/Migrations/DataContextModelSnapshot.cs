@@ -21,23 +21,27 @@ namespace VOTDC.Migrations
 
             modelBuilder.Entity("VOTDC.Models.Favorite", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("UserId1")
                         .HasColumnType("int");
 
-                    b.Property<int>("VerseId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VerseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
 
                     b.HasIndex("VerseId");
 
@@ -53,20 +57,17 @@ namespace VOTDC.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("Username")
                         .IsUnique()
-                        .HasFilter("[Email] IS NOT NULL");
+                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Users");
 
@@ -74,18 +75,19 @@ namespace VOTDC.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "admin@example.com",
                             IsAdmin = true,
-                            Password = ""
+                            Username = "admin"
                         });
                 });
 
             modelBuilder.Entity("VOTDC.Models.Verse", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BibleReferenceLink")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Book")
                         .HasColumnType("nvarchar(max)");
@@ -93,15 +95,37 @@ namespace VOTDC.Migrations
                     b.Property<string>("Chapter")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ResourseId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FacebookShareUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Verses")
+                    b.Property<string>("ImageLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PinterestShareUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TwitterShareUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("VerseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VerseNumbers")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VerseText")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ResourseId");
 
                     b.ToTable("Verses");
                 });
@@ -110,9 +134,7 @@ namespace VOTDC.Migrations
                 {
                     b.HasOne("VOTDC.Models.User", "User")
                         .WithMany("Favorites")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId1");
 
                     b.HasOne("VOTDC.Models.Verse", "Verse")
                         .WithMany()
